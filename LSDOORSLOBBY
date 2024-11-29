@@ -29,7 +29,7 @@ local Window = Library:CreateWindow({
 local Tabs = {
     -- Creates a new tab titled Main
     Main = Window:AddTab('Main')
-    ItemsSpawner = Window:AddTab('Items Spawner'),
+    ItemsSpawner = Window:AddTab('Items Spawner')
     ['UI Settings'] = Window:AddTab('UI Settings'),
 }
 
