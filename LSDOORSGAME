@@ -6,6 +6,8 @@ local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main
 local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+local character = game.Players.LocalPlayer.Character
+local Player = game.Players.LocalPlayer
 
 local Window = Library:CreateWindow({
     -- Set Center to true if you want the menu to appear in the center
@@ -28,13 +30,14 @@ local Window = Library:CreateWindow({
 -- You do not have to set your tabs & groups up this way, just a prefrence.
 local Tabs = {
     -- Creates a new tab titled Main
-    Main = Window:AddTab('LocalPlayer'),
+    Main = Window:AddTab('Main'),
+    VisualItems = Window:AddTab('Items Spawner')
     ['UI Settings'] = Window:AddTab('UI Settings'),
 }
 
 -- Groupbox and Tabbox inherit the same functions
 -- except Tabboxes you have to call the functions on a tab (Tabbox:AddTab(name))
-local LeftGroupBox = Tabs.Main:AddLeftGroupbox('Groupbox')
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('Player')
 
 -- We can also get our Main tab via the following code:
 -- local LeftGroupBox = Window.Tabs.Main:AddLeftGroupbox('Groupbox')
@@ -52,13 +55,17 @@ local Tab2 = TabBox:AddTab('Tab 2')
 
 -- Groupbox:AddToggle
 -- Arguments: Index, Options
-LeftGroupBox:AddToggle('Toggle', {
-    Text = 'This is a toggle',
-    Default = true, -- Default value (true / false)
-    Tooltip = 'This is a tooltip', -- Information shown when you hover over the toggle
+LeftGroupBox:AddSlider('SpeedBoost', {
+    Text = 'WalkSpeed',
+    Default = 0,
+    Min = 0,
+    Max = 75,
+    Rounding = 1,
+    Compact = false,
 
     Callback = function(Value)
-        print('[cb] MyToggle changed to:', Value)
+        character:SetAttribute("SpeedBoost", Value)
+        character:FindFirstChildOfClass("Humanoid").WalkSpeed = Value
     end
 })
 
@@ -71,13 +78,6 @@ LeftGroupBox:AddToggle('Toggle', {
 -- To get the state of the toggle you do toggle.Value
 
 -- Calls the passed function when the toggle is updated
-Toggles.MyToggle:OnChanged(function()
-    -- here we get our toggle object & then get its value
-    print('MyToggle changed to:', Toggles.MyToggle.Value)
-end)
-
--- This should print to the console: "My toggle state changed! New value: false"
-Toggles.MyToggle:SetValue(false)
 
 -- 1/15/23
 -- Deprecated old way of creating buttons in favor of using a table
@@ -95,22 +95,13 @@ Toggles.MyToggle:SetValue(false)
     You can call :AddButton on a button to add a SubButton!
 ]]
 
-local MoonBarrel = LeftGroupBox:AddButton({
-    Text = 'Moonlight Barrel',
+local MyButton = LeftGroupBox:AddButton({
+    Text = 'Kick Yourself',
     Func = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/LolSeek/MoonBarrel/refs/heads/main/MoonBarrelMain"))()
+    Player:Kick("Kicked!")
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
-})
-
-local MyButton2 = MyButton:AddButton({
-    Text = 'Sub button',
-    Func = function()
-        print('You clicked a sub button!')
-    end,
-    DoubleClick = true, -- You will have to click this button twice to trigger the callback
-    Tooltip = 'This is the sub button (double click me!)'
+    Tooltip = 'Kicks you from the game.'
 })
 
 --[[
@@ -297,19 +288,19 @@ LeftGroupBox:AddLabel('Keybind'):AddKeyPicker('KeyPicker', {
     -- Example: Keybind which you use to toggle flyhack, etc.
     -- Changing the toggle disables the keybind state and toggling the keybind switches the toggle state
 
-    Default = 'T', -- String as the name of the keybind (MB1, MB2 for mouse buttons)
+    Default = 'MB2', -- String as the name of the keybind (MB1, MB2 for mouse buttons)
     SyncToggleState = false,
 
 
     -- You can define custom Modes but I have never had a use for it.
     Mode = 'Toggle', -- Modes: Always, Toggle, Hold
 
-    Text = 'Test the script using print', -- Text to display in the keybind menu
+    Text = 'Auto lockpick safes', -- Text to display in the keybind menu
     NoUI = false, -- Set to true if you want to hide from the Keybind menu,
 
     -- Occurs when the keybind is clicked, Value is `true`/`false`
     Callback = function(Value)
-        print('Print by LS hub!', Value)
+        print('[cb] Keybind clicked!', Value)
     end,
 
     -- Occurs when the keybind itself is changed, `New` is a KeyCode Enum OR a UserInputType Enum
@@ -418,7 +409,7 @@ local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
 
 -- I set NoUI so it does not show up in the keybinds menu
 MenuGroup:AddButton('Unload', function() Library:Unload() end)
-MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'LeftShift', NoUI = true, Text = 'Menu Keybind' })
+MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'LeftShift', NoUI = true, Text = 'Menu keybind' })
 
 Library.ToggleKeybind = Options.MenuKeybind -- Allows you to have a custom keybind for the menu
 
@@ -441,7 +432,7 @@ SaveManager:SetIgnoreIndexes({ 'MenuKeybind' })
 -- use case for doing it this way:
 -- a script hub could have themes in a global folder
 -- and game configs in a separate folder per game
-ThemeManager:SetFolder('MyScriptHub')
+ThemeManager:SetFolder('LOLSEEK')
 SaveManager:SetFolder('MyScriptHub/specific-game')
 
 -- Builds our config menu on the right side of our tab
