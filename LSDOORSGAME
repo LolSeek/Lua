@@ -63,7 +63,7 @@ LeftGroupBox:AddSlider('SpeedBoost', {
 
     Callback = function(Value)
     game.Players.LocalPlayer.Character:SetAttribute("SpeedBoostExtra", Value)
-    game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Walkspeed = Value
+    game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = Value
     end
 })
 
